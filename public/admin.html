@@ -166,7 +166,7 @@
   </div>
 
   <!-- ============ SOCKET.IO ============ -->
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 
   <script>
     'use strict';
@@ -175,12 +175,7 @@
     const $ = s => document.querySelector(s);
 
     // Socket.IO
-    const ioClient = io(API, {
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5
-    });
+    const ioClient = io(API);
 
     ioClient.on('connect', () => console.log('✅ Conectado'));
     ioClient.on('disconnect', () => console.warn('⚠️ Desconectado'));

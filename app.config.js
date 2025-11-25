@@ -23,9 +23,16 @@ module.exports = {
   socketIOOptions: {
     cors: {
       origin: process.env.CORS_ORIGIN || '*',
-      methods: ['GET', 'POST', 'DELETE']
+      methods: ['GET', 'POST', 'DELETE'],
+      credentials: true
     },
-    transports: ['websocket', 'polling']
+    transports: ['websocket', 'polling'],
+    pingInterval: 25000,
+    pingTimeout: 60000,
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    reconnectionAttempts: 5
   },
   
   // Validation
