@@ -247,14 +247,51 @@ main {
   .login-container {
     padding: 32px 24px;
     max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-header {
+    margin-bottom: 28px;
+  }
+
+  .login-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
   }
 
   .login-container h2 {
     font-size: 20px;
+    color: #00a8e8;
+  }
+
+  .login-container p {
+    color: #5a6c7d;
+  }
+
+  .login-field input {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    background: #f8fafb;
+    border: 2px solid #e0e6ed;
+  }
+
+  .login-field input:focus {
+    border-color: #00a8e8;
+    background: #f0f9ff;
+  }
+
+  .login-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    background: linear-gradient(135deg, #00a8e8 0%, #007bba 100%);
+    border-radius: 6px;
   }
 
   header {
     padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
   .header-inner {
@@ -262,13 +299,40 @@ main {
     gap: 12px;
   }
 
+  .header-icon {
+    font-size: 24px;
+  }
+
+  .header-title h1 {
+    font-size: 18px;
+  }
+
+  .header-title span {
+    font-size: 12px;
+  }
+
   .header-right {
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
+    gap: 8px;
+  }
+
+  .status-badge {
+    background: #f0f9ff;
+    border: 1px solid #00a8e8;
+    color: #00a8e8;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    flex: 1;
   }
 
   .logout-btn {
-    width: 100%;
+    padding: 8px 14px;
+    font-size: 12px;
+    background: #ff4444;
+    color: white;
+    border-radius: 6px;
   }
 
   main {
@@ -281,15 +345,24 @@ main {
 
   .card {
     padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #e0e6ed;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
   .card-header {
     margin-bottom: 16px;
     padding-bottom: 12px;
+    border-bottom: 2px solid #f0f1f4;
+  }
+
+  .card-icon {
+    font-size: 22px;
   }
 
   .card h2 {
     font-size: 14px;
+    color: #00a8e8;
   }
 
   form {
@@ -297,17 +370,57 @@ main {
     gap: 12px;
   }
 
-  .field-span {
-    grid-column: 1 / -1;
+  .field {
+    gap: 6px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  input, select, textarea {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #d0d7e0;
+    background: #f8fafb;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #00a8e8;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+  }
+
+  textarea {
+    min-height: 80px;
   }
 
   .btn-group {
     flex-direction: column;
     gap: 8px;
+    margin-top: 6px;
   }
 
-  .btn-primary,
+  .btn-primary {
+    background: linear-gradient(135deg, #00a8e8 0%, #007bba 100%);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 100%;
+  }
+
   .btn-secondary {
+    background: #f0f1f4;
+    color: #2c3e50;
+    border: 1px solid #d0d7e0;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
     width: 100%;
   }
 
@@ -316,50 +429,84 @@ main {
     right: 12px;
     left: 12px;
     max-width: none;
+    font-size: 12px;
+    padding: 12px 14px;
+    border-radius: 6px;
   }
 
   .table-container {
     margin-top: 12px;
-    overflow-x: auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
   table {
     font-size: 12px;
   }
 
-  th,
+  th {
+    background: linear-gradient(135deg, #00a8e8 0%, #007bba 100%);
+    color: white;
+    padding: 10px;
+    font-weight: 600;
+  }
+
   td {
-    padding: 8px;
+    padding: 10px;
+    border-bottom: 1px solid #e0e6ed;
+  }
+
+  tbody tr:hover {
+    background: #f0f9ff;
   }
 
   table button {
-    padding: 4px 8px;
+    padding: 5px 10px;
     font-size: 11px;
+    border-radius: 4px;
+    background: #ffe0e6;
+    color: #c20e2d;
+    border: none;
+  }
+
+  table button:hover {
+    background: #ff6b7a;
+    color: white;
   }
 }
 
 @media (max-width: 480px) {
   body {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  #loginModal {
+    background: linear-gradient(135deg, #f0f9ff 0%, #f8fafb 100%);
   }
 
   .login-container {
     padding: 24px 16px;
     width: 95%;
+    border-radius: 10px;
   }
 
   .login-icon {
-    font-size: 36px;
+    font-size: 40px;
     margin-bottom: 12px;
+  }
+
+  .login-header {
+    margin-bottom: 24px;
   }
 
   .login-container h2 {
     font-size: 18px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .login-container p {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .login-form {
@@ -367,32 +514,58 @@ main {
   }
 
   .login-field {
-    gap: 4px;
+    gap: 5px;
   }
 
   .login-field label {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 600;
   }
 
   .login-field input {
-    padding: 8px 10px;
+    padding: 10px;
     font-size: 13px;
+    border-radius: 5px;
   }
 
   .login-btn {
-    padding: 10px 16px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
   }
 
   header {
-    padding: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e0e6ed;
+  }
+
+  .header-icon {
+    font-size: 20px;
   }
 
   .header-title h1 {
-    font-size: 18px;
+    font-size: 16px;
+    margin-bottom: 2px;
   }
 
-  .subtitle {
+  .header-title span {
+    font-size: 10px;
+    color: #5a6c7d;
+  }
+
+  .header-right {
+    gap: 6px;
+  }
+
+  .status-badge {
+    padding: 5px 10px;
+    font-size: 11px;
+    flex: 1;
+  }
+
+  .logout-btn {
+    padding: 6px 12px;
     font-size: 11px;
   }
 
@@ -400,16 +573,31 @@ main {
     padding: 8px;
   }
 
+  .container-2col {
+    gap: 8px;
+  }
+
   .card {
     padding: 12px;
+    border-radius: 8px;
+  }
+
+  .card-header {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    gap: 8px;
   }
 
   .card-icon {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .card h2 {
     font-size: 13px;
+  }
+
+  form {
+    gap: 10px;
   }
 
   .field {
@@ -417,12 +605,13 @@ main {
   }
 
   label {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   input, select, textarea {
     padding: 8px 10px;
-    font-size: 13px;
+    font-size: 12px;
+    border-radius: 5px;
   }
 
   textarea {
@@ -431,34 +620,115 @@ main {
 
   button {
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: 11px;
+    border-radius: 5px;
   }
 
   .btn-group {
-    margin-top: 6px;
+    gap: 6px;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 12px;
   }
 
   .alert {
-    font-size: 12px;
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    font-size: 11px;
     padding: 10px 12px;
+  }
+
+  .table-container {
+    margin-top: 10px;
   }
 
   table {
     font-size: 11px;
   }
 
-  th,
+  th {
+    padding: 8px;
+    font-size: 10px;
+  }
+
   td {
-    padding: 6px;
+    padding: 8px;
   }
 
   .tiny {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   table button {
-    padding: 4px 6px;
+    padding: 4px 8px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-container {
+    padding: 20px 14px;
+    width: 98%;
+  }
+
+  .login-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+
+  .login-container h2 {
+    font-size: 16px;
+  }
+
+  .login-field input {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  header {
+    padding: 8px 10px;
+  }
+
+  .header-title h1 {
+    font-size: 14px;
+  }
+
+  main {
+    padding: 6px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .card h2 {
+    font-size: 12px;
+  }
+
+  label {
+    font-size: 10px;
+  }
+
+  input, select, textarea {
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  table {
+    font-size: 10px;
+  }
+
+  th, td {
+    padding: 6px;
+  }
+
+  table button {
+    padding: 3px 6px;
+    font-size: 9px;
   }
 }
 
