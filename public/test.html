@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>🧪 Pruebas Automáticas - Control Operativo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+      margin: 0;
+      background: #0b1020;
+      color: #eef1ff;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { margin-top: 0; color: #cfd6ff; }
+    .test-group {
+      background: #121737;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 10px;
+      border: 1px solid #2c366b;
+    }
+    .test-item {
+      background: #0e1330;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border-left: 4px solid #4152e6;
+    }
+    .test-item.pass {
+      border-left-color: #57ffa0;
+      background: rgba(87, 255, 160, 0.05);
+    }
+    .test-item.fail {
+      border-left-color: #ff8e8e;
+      background: rgba(255, 142, 142, 0.05);
+    }
+    button {
+      background: #4152e6;
+      color: white;
+      border: 0;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover { filter: brightness(1.1); }
+    .output {
+      background: #0e1330;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      margin-top: 10px;
+      border: 1px solid #2c366b;
+    }
+    .log-line { margin: 4px 0; }
+    .log-info { color: #a4afff; }
+    .log-success { color: #57ffa0; }
+    .log-error { color: #ff8e8e; }
+    .log-warn { color: #ffd166; }
+    .status {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .status.ok { background: #57ffa0; }
+    .status.fail { background: #ff8e8e; }
+    .status.loading { background: #ffd166; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🧪 Panel de Pruebas Automáticas</h1>
+  <p>Control Operativo - Test Suite Completo</p>
+
+  <div class="test-group">
+    <h2>📋 Prueba 1: Estado del Servidor</h2>
+    <button onclick="testServerHealth()">Verificar</button>
+    <div id="test1" class="output"></div>
+  </div>
+
+  <div class="test-group">
+    <h2>📝 Prueba 2: Crear Registro de Prueba</h2>
+    <button onclick="testCreateRecord()">Crear</button>
+    <div id="test2" class="output"></div>
+  </div>
+
+  <div class="test-group">
+    <h2>📺 Prueba 3: Verificar en API</h2>
+    <button onclick="testVerifyInAPI()">Verificar</button>
+    <div id="test3" class="output"></div>
+  </div>
+
+  <div class="test-group">
+    <h2>🔄 Prueba 4: Socket.IO Conexión</h2>
+    <button onclick="testSocketIO()">Probar</button>
+    <div id="test4" class="output"></div>
+  </div>
+
+  <div class="test-group">
+    <h2>🚀 Prueba Completa (Suite Automática)</h2>
+    <button onclick="runFullTest()">EJECUTAR TODO</button>
+    <button onclick="cleanTests()">Limpiar logs</button>
+    <div id="testFull" class="output"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const API = 'http://localhost:3000';
+const testResults = {};
+
+function addLog(testId, msg, type = 'info') {
+  const elem = document.getElementById(testId);
+  const line = document.createElement('div');
+  line.className = `log-line log-${type}`;
+  line.innerHTML = `<span class="status ${type === 'success' ? 'ok' : type === 'error' ? 'fail' : 'loading'}"></span>${msg}`;
+  elem.appendChild(line);
+  elem.scrollTop = elem.scrollHeight;
+  console.log(`[${testId}] ${type}: ${msg}`);
+}
+
+function clearLog(testId) {
+  document.getElementById(testId).innerHTML = '';
+}
+
+// Test 1: Health check
+async function testServerHealth() {
+  clearLog('test1');
+  addLog('test1', 'Verificando health endpoint...', 'info');
+  try {
+    const res = await fetch(API + '/healthz');
+    if (res.ok) {
+      const data = await res.json();
+      addLog('test1', `✓ Servidor respondiendo (${data.ts})`, 'success');
+      testResults['server_health'] = true;
+    } else {
+      addLog('test1', `✗ Servidor respondió con ${res.status}`, 'error');
+      testResults['server_health'] = false;
+    }
+  } catch (e) {
+    addLog('test1', `✗ Error: ${e.message}`, 'error');
+    testResults['server_health'] = false;
+  }
+}
+
+// Test 2: Create record
+async function testCreateRecord() {
+  clearLog('test2');
+  addLog('test2', 'Creando registro de prueba...', 'info');
+  
+  const testRecord = {
+    empresa: 'TEST AUTO ' + Date.now(),
+    trayecto: 'Asunción → Test',
+    evento: 'SALIDA',
+    horaReal: new Date().toISOString(),
+    horaProgramada: new Date().toISOString(),
+    chapa: 'TEST-AUTO',
+    numeroCoche: 'C-9999',
+    tipoServicio: 'prueba',
+    plataforma: '99',
+    precio: 99999,
+    conductor: 'AutoTest',
+    pasajeros: 1
+  };
+
+  try {
+    addLog('test2', `POST /api/records...`, 'info');
+    const res = await fetch(API + '/api/records', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testRecord)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+
+    const rec = await res.json();
+    addLog('test2', `✓ Registro creado ID: ${rec.id}`, 'success');
+    addLog('test2', `Empresa: ${rec.empresa}`, 'success');
+    testResults['create_record'] = rec.id;
+  } catch (e) {
+    addLog('test2', `✗ Error: ${e.message}`, 'error');
+    testResults['create_record'] = null;
+  }
+}
+
+// Test 3: Verify in API
+async function testVerifyInAPI() {
+  clearLog('test3');
+  addLog('test3', 'Obteniendo lista de registros...', 'info');
+  
+  try {
+    const res = await fetch(API + '/api/records?limit=100');
+    const records = await res.json();
+    
+    addLog('test3', `✓ Registros obtenidos: ${records.length}`, 'success');
+    
+    // Mostrar últimos 3
+    for (let i = 0; i < Math.min(3, records.length); i++) {
+      const r = records[i];
+      addLog('test3', `[${i+1}] ${r.empresa} - ${r.trayecto}`, 'info');
+    }
+    
+    testResults['api_verify'] = true;
+  } catch (e) {
+    addLog('test3', `✗ Error: ${e.message}`, 'error');
+    testResults['api_verify'] = false;
+  }
+}
+
+// Test 4: Socket.IO
+async function testSocketIO() {
+  clearLog('test4');
+  addLog('test4', 'Conectando Socket.IO...', 'info');
+  
+  const io = window.io;
+  const socket = io(API, {
+    transports: ['websocket', 'polling'],
+    reconnection: true
+  });
+
+  let connected = false;
+
+  socket.on('connect', () => {
+    connected = true;
+    addLog('test4', `✓ Socket.IO conectado (${socket.id})`, 'success');
+  });
+
+  socket.on('error', (err) => {
+    addLog('test4', `✗ Error Socket: ${err}`, 'error');
+  });
+
+  socket.on('disconnect', () => {
+    addLog('test4', 'Socket.IO desconectado', 'warn');
+  });
+
+  // Enviar ping
+  setTimeout(() => {
+    if (connected) {
+      addLog('test4', 'Enviando ping...', 'info');
+      socket.emit('ping');
+      socket.once('pong', (ts) => {
+        addLog('test4', `✓ Pong recibido (latencia: ${Date.now() - ts}ms)`, 'success');
+        socket.disconnect();
+        testResults['socketio'] = true;
+      });
+    } else {
+      addLog('test4', '✗ No se conectó', 'error');
+      testResults['socketio'] = false;
+    }
+  }, 1000);
+}
+
+// Test completo
+async function runFullTest() {
+  clearLog('testFull');
+  addLog('testFull', '╔════════════════════════════════════════╗', 'info');
+  addLog('testFull', '║  SUITE COMPLETA DE PRUEBAS            ║', 'info');
+  addLog('testFull', '╚════════════════════════════════════════╝', 'info');
+  
+  addLog('testFull', '', 'info');
+  addLog('testFull', '[1/4] Verificando salud del servidor...', 'warn');
+  await testServerHealth();
+  addLog('testFull', testResults['server_health'] ? '✓ PASADO' : '✗ FALLÓ', testResults['server_health'] ? 'success' : 'error');
+  
+  addLog('testFull', '', 'info');
+  addLog('testFull', '[2/4] Creando registro...', 'warn');
+  await testCreateRecord();
+  addLog('testFull', testResults['create_record'] ? '✓ PASADO' : '✗ FALLÓ', testResults['create_record'] ? 'success' : 'error');
+  
+  await new Promise(r => setTimeout(r, 500));
+  
+  addLog('testFull', '', 'info');
+  addLog('testFull', '[3/4] Verificando en API...', 'warn');
+  await testVerifyInAPI();
+  addLog('testFull', testResults['api_verify'] ? '✓ PASADO' : '✗ FALLÓ', testResults['api_verify'] ? 'success' : 'error');
+  
+  addLog('testFull', '', 'info');
+  addLog('testFull', '[4/4] Probando Socket.IO...', 'warn');
+  await testSocketIO();
+  addLog('testFull', testResults['socketio'] ? '✓ PASADO' : '✗ FALLÓ', testResults['socketio'] ? 'success' : 'error');
+  
+  await new Promise(r => setTimeout(r, 2000));
+  
+  addLog('testFull', '', 'info');
+  const allPassed = Object.values(testResults).filter(v => v === true).length === 4;
+  if (allPassed) {
+    addLog('testFull', '🎉 ¡TODOS LOS TESTS PASARON!', 'success');
+    addLog('testFull', 'El sistema está 100% funcional', 'success');
+  } else {
+    addLog('testFull', '⚠️  Algunos tests fallaron', 'error');
+  }
+}
+
+function cleanTests() {
+  clearLog('test1');
+  clearLog('test2');
+  clearLog('test3');
+  clearLog('test4');
+  clearLog('testFull');
+  testResults = {};
+}
+
+// Auto-run on load
+window.addEventListener('load', () => {
+  addLog('testFull', 'Panel de pruebas cargado. Haz click en los botones para probar.', 'info');
+});
+</script>
+</body>
+</html>

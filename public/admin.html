@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Panel Administrativo - Control Operativo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='60' text-anchor='middle' font-size='70' font-weight='bold' fill='%23444'>⚙</text></svg>" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+</head>
+<body>
+  <!-- ============ LOGIN ============ -->
+  <div id="loginModal">
+    <div class="login-container">
+      <div class="login-header">
+        <span class="login-icon">🔐</span>
+        <h2>Acceso Administrativo</h2>
+        <p>Sistema de Control Operativo</p>
+      </div>
+      <form id="loginForm" class="login-form">
+        <div class="login-field">
+          <label for="loginUser">Usuario</label>
+          <input id="loginUser" type="text" placeholder="admin" autocomplete="username" />
+        </div>
+        <div class="login-field">
+          <label for="loginPass">Contraseña</label>
+          <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button type="submit" class="login-btn">Ingresar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <div id="adminContent" hidden>
+    <!-- HEADER -->
+    <header>
+      <div class="header-inner">
+        <div class="header-left">
+          <div class="header-icon">⚙️</div>
+          <div class="header-title">
+            <h1>Control Operativo</h1>
+            <span class="subtitle">Terminal de Ómnibus Ciudad del Este</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Sistema activo</span>
+          </div>
+          <button id="logoutBtn" class="logout-btn">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+      <div class="container-2col">
+        <!-- FORM CARD -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📝</span>
+            <h2>Registrar Nueva Salida</h2>
+          </div>
+          <form id="formulario">
+            <div class="field">
+              <label>Empresa <span class="required">*</span></label>
+              <input id="empresa" type="text" required />
+            </div>
+            <div class="field">
+              <label>Trayecto <span class="required">*</span></label>
+              <input id="trayecto" type="text" required />
+            </div>
+            <div class="field">
+              <label>Tipo de Evento <span class="required">*</span></label>
+              <select id="evento" required>
+                <option value="">-- Seleccionar --</option>
+                <option value="SALIDA">SALIDA</option>
+                <option value="LLEGADA">LLEGADA</option>
+                <option value="CANCELADA">CANCELADA</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Hora Real <span class="required">*</span></label>
+              <input id="horaReal" type="datetime-local" required />
+            </div>
+            <div class="field">
+              <label>Hora Programada</label>
+              <input id="horaProgramada" type="datetime-local" />
+            </div>
+            <div class="field">
+              <label>Chapa</label>
+              <input id="chapa" type="text" />
+            </div>
+            <div class="field">
+              <label>Número Coche</label>
+              <input id="numeroCoche" type="text" />
+            </div>
+            <div class="field">
+              <label>Tipo de Servicio</label>
+              <input id="tipoServicio" type="text" placeholder="Ej: Semi-cama, Cama" />
+            </div>
+            <div class="field">
+              <label>Plataforma</label>
+              <input id="plataforma" type="text" />
+            </div>
+            <div class="field">
+              <label>Precio</label>
+              <input id="precio" type="number" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Pasajeros</label>
+              <input id="pasajeros" type="number" />
+            </div>
+            <div class="field">
+              <label>Boletos</label>
+              <input id="boletos" type="number" />
+            </div>
+            <div class="field">
+              <label>Conductor</label>
+              <input id="conductor" type="text" />
+            </div>
+            <div class="field">
+              <label>Copiloto</label>
+              <input id="copiloto" type="text" />
+            </div>
+            <div class="field field-span">
+              <label>Observaciones</label>
+              <textarea id="observaciones" placeholder="Notas adicionales..."></textarea>
+            </div>
+            <div class="btn-group">
+              <button type="submit" class="btn-primary">Guardar</button>
+              <button type="reset" class="btn-secondary">Limpiar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2>Últimos Registros</h2>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha / Hora</th>
+                  <th>Evento</th>
+                  <th>Empresa</th>
+                  <th>Trayecto</th>
+                  <th>Plataforma</th>
+                  <th>Precio</th>
+                  <th class="action-col">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="mensajeAlerta" class="alert"></div>
+  </div>
+
+  <!-- ============ SOCKET.IO ============ -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <script>
+    'use strict';
+
+    const API = location.origin;
+    const $ = s => document.querySelector(s);
+
+    // Socket.IO
+    const ioClient = io(API, {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5
+    });
+
+    ioClient.on('connect', () => console.log('✅ Conectado'));
+    ioClient.on('disconnect', () => console.warn('⚠️ Desconectado'));
+
+    // DOM
+    const form = $('#formulario');
+    const tbody = $('#tbody');
+    const mensajeAlerta = $('#mensajeAlerta');
+
+    function escapeHtml(s = '') {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    // Submit form
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        const body = {
+          empresa: form.empresa.value,
+          trayecto: form.trayecto.value,
+          evento: form.evento.value,
+          horaReal: form.horaReal.value,
+          horaProgramada: form.horaProgramada.value || null,
+          chapa: form.chapa.value,
+          numeroCoche: form.numeroCoche.value,
+          tipoServicio: form.tipoServicio.value,
+          plataforma: form.plataforma.value,
+          precio: form.precio.value ? Number(form.precio.value) : null,
+          pasajeros: form.pasajeros.value ? Number(form.pasajeros.value) : null,
+          boletos: form.boletos.value ? Number(form.boletos.value) : null,
+          conductor: form.conductor.value,
+          copiloto: form.copiloto.value,
+          observaciones: form.observaciones.value
+        };
+
+        const res = await fetch(API + '/api/records', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Error al guardar');
+        }
+
+        const rec = await res.json();
+        console.log('✅ Registro guardado:', rec);
+        showAlert('Registro guardado exitosamente', 'success');
+        form.reset();
+        $('#empresa').focus();
+        loadRecent();
+      } catch (e) {
+        showAlert('Error: ' + e.message, 'error');
+        console.error('Error:', e);
+      }
+    });
+
+    function showAlert(msg, type = 'info') {
+      mensajeAlerta.textContent = msg;
+      mensajeAlerta.className = 'alert show ' + type;
+      setTimeout(() => mensajeAlerta.classList.remove('show'), 4000);
+    }
+
+    function tr(r) {
+      const t = new Date(r.horaReal);
+      const fecha = t.toLocaleDateString();
+      const hora = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const precio = r.precio != null ? new Intl.NumberFormat('es-PY').format(r.precio) : '—';
+      return `<tr data-id="${r.id}">
+        <td>${fecha} <span class="tiny">${hora}</span></td>
+        <td>${r.evento || '—'}</td>
+        <td>${escapeHtml(r.empresa || '—')}</td>
+        <td>${escapeHtml(r.trayecto || '—')}</td>
+        <td>${escapeHtml(r.plataforma || '—')}</td>
+        <td>${precio}</td>
+        <td><button data-act="delete">Borrar</button></td>
+      </tr>`;
+    }
+
+    tbody.addEventListener('click', async (ev) => {
+      const btn = ev.target.closest('button[data-act="delete"]');
+      if (!btn) return;
+      const trEl = ev.target.closest('tr');
+      const id = trEl?.dataset?.id;
+      if (!id) return;
+      if (!confirm('¿Eliminar este registro?')) return;
+      const res = await fetch(API + '/api/records/' + id, { method: 'DELETE' });
+      if (res.ok) {
+        trEl.remove();
+        showAlert('Registro eliminado', 'success');
+      }
+    });
+
+    async function loadRecent() {
+      const res = await fetch(API + '/api/records?limit=200');
+      const rows = await res.json();
+      tbody.innerHTML = rows.map(tr).join('');
+    }
+
+    ioClient.on('record:new', (r) => {
+      tbody.insertAdjacentHTML('afterbegin', tr(r));
+    });
+    ioClient.on('record:deleted', ({ id }) => {
+      const el = tbody.querySelector(`tr[data-id="${id}"]`);
+      if (el) el.remove();
+    });
+
+    loadRecent();
+  </script>
+
+  <!-- ============ LOGIN SCRIPT ============ -->
+  <script>
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'admin2025';
+
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const loginError = document.getElementById('loginError');
+    const adminContent = document.getElementById('adminContent');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function checkSession() {
+      const token = sessionStorage.getItem('adminToken');
+      if (token === 'logged_in') {
+        loginModal.hidden = true;
+        adminContent.hidden = false;
+      } else {
+        loginModal.hidden = false;
+        adminContent.hidden = true;
+      }
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = loginUser.value.trim();
+      const pass = loginPass.value.trim();
+
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        sessionStorage.setItem('adminToken', 'logged_in');
+        loginError.textContent = '';
+        loginModal.hidden = true;
+        adminContent.hidden = false;
+        loginUser.value = '';
+        loginPass.value = '';
+      } else {
+        loginError.textContent = 'Usuario o contraseña incorrectos';
+        loginPass.value = '';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('adminToken');
+      loginModal.hidden = false;
+      adminContent.hidden = true;
+      loginUser.value = '';
+      loginPass.value = '';
+      loginUser.focus();
+    });
+
+    checkSession();
+    loginUser.focus();
+  </script>
+</body>
+</html>

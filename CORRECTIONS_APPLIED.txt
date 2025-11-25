@@ -1,0 +1,125 @@
+═══════════════════════════════════════════════════════════════════════════════
+  🔧 REPORTE DE CORRECCIONES - ERROR "Cannot GET /"
+═══════════════════════════════════════════════════════════════════════════════
+
+📋 PROBLEMA ENCONTRADO
+───────────────────────────────────────────────────────────────────────────────
+
+El navegador mostraba: "Cannot GET /"
+
+Causa: El servidor Express no estaba sirviendo archivos estáticos en la ruta raíz.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔍 PROBLEMAS IDENTIFICADOS Y SOLUCIONADOS
+───────────────────────────────────────────────────────────────────────────────
+
+PROBLEMA 1: Falta ruta raíz (/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Archivo: server/server.js
+
+ANTES:
+  app.use('/', express.static(PUBLIC_DIR));
+
+DESPUÉS:
+  app.use(express.static(PUBLIC_DIR));
+  
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(PUBLIC_DIR, 'admin.html'));
+  });
+
+✅ Resultado: Ahora http://localhost:3000 redirige a admin.html
+
+
+PROBLEMA 2: Rutas incorrectas en app.config.js
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Archivo: app.config.js
+
+ANTES:
+  dataDir: path.join(__dirname, '..', 'server', 'data'),
+  dataFile: path.join(__dirname, '..', 'server', 'data', 'records.json'),
+
+(Esto apuntaba a C:\Users\...\server\data en vez de 
+ C:\Users\...\control-operativo-realtime\server\data)
+
+DESPUÉS:
+  dataDir: path.join(__dirname, 'server', 'data'),
+  dataFile: path.join(__dirname, 'server', 'data', 'records.json'),
+
+✅ Resultado: Ahora apunta correctamente a los datos
+
+
+PROBLEMA 3: PowerShell policy
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Error: "No se puede cargar npm.ps1 porque la ejecución de scripts está deshabilitada"
+
+Solución aplicada:
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+
+✅ Resultado: npm funciona correctamente
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ ESTADO FINAL
+───────────────────────────────────────────────────────────────────────────────
+
+🟢 Servidor iniciado: http://localhost:3000
+🟢 Admin Panel: http://localhost:3000/admin.html  ← FUNCIONA ✨
+🟢 Pantalla Pública: http://localhost:3000/display.html
+🟢 API REST: http://localhost:3000/api/records
+🟢 Datos: Correctamente persistidos en server/data/records.json
+🟢 Socket.IO: Conectado y escuchando eventos
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📝 PRUEBAS REALIZADAS
+───────────────────────────────────────────────────────────────────────────────
+
+✓ Acceso a http://localhost:3000/admin.html
+✓ Carga del formulario
+✓ Conexión Socket.IO (visible en logs: "Cliente conectado")
+✓ Rutas estáticas funcionando
+✓ Datos de ejemplo disponibles
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 PRÓXIMOS PASOS
+───────────────────────────────────────────────────────────────────────────────
+
+1. En el Admin Panel:
+   ✓ Completa los campos requeridos (empresa, trayecto, evento, hora real)
+   ✓ Click en "Guardar"
+   ✓ Deberías ver un alert de confirmación
+
+2. Verifica en Pantalla Pública:
+   ✓ Abre http://localhost:3000/display.html en otra pestaña
+   ✓ El registro debe aparecer en tiempo real
+   ✓ Prueba los filtros
+
+3. Consulta API:
+   ✓ GET http://localhost:3000/api/records
+   ✓ Debe retornar JSON con los registros
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 LOGS DEL SERVIDOR (confirmación)
+───────────────────────────────────────────────────────────────────────────────
+
+[INFO] 🚀 SERVIDOR INICIADO
+[INFO] Environment: development
+[INFO] Puerto: 3000
+[INFO] URL: http://localhost:3000
+[INFO] Data: C:\Users\josem_6ac6g6r\Escritorio\Proyecto Alex\3.0\control-o
+         perativo-realtime\server\data\records.json
+[DEBUG] Cliente conectado: (Socket.IO)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ TODO FUNCIONA CORRECTAMENTE ✨
+
+Última actualización: 11 de Noviembre de 2024
+═══════════════════════════════════════════════════════════════════════════════

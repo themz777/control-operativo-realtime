@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Control Operativo en Tiempo Real - Documentación</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.7;
+      color: #2c3e50;
+      background: #ffffff;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    /* ========== PORTADA ========== */
+    .cover {
+      background: linear-gradient(135deg, #00a8e8 0%, #007bba 100%);
+      color: white;
+      text-align: center;
+      padding: 180px 60px 120px;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="15" fill="rgba(255,255,255,0.05)"/><circle cx="80" cy="80" r="20" fill="rgba(255,255,255,0.05)"/><circle cx="80" cy="20" r="10" fill="rgba(255,255,255,0.03)"/></svg>');
+      pointer-events: none;
+    }
+
+    .cover > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover h1 {
+      font-size: 56px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .cover .subtitle {
+      font-size: 24px;
+      font-weight: 300;
+      margin: 20px 0 40px 0;
+      opacity: 0.95;
+      letter-spacing: 0.5px;
+    }
+
+    .cover p {
+      font-size: 16px;
+      margin: 8px 0;
+      opacity: 0.9;
+    }
+
+    .cover .metadata {
+      margin-top: 100px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    .cover .metadata span {
+      display: block;
+      margin: 5px 0;
+    }
+
+    /* ========== ÍNDICE ========== */
+    .toc-section {
+      background: linear-gradient(to bottom, #f8fafb, #ffffff);
+      padding: 80px 60px;
+      border-bottom: 1px solid #e8ecf1;
+    }
+
+    .toc-section h2 {
+      color: #00a8e8;
+      font-size: 36px;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      border: none;
+      padding-bottom: 0;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .toc-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #e8ecf1;
+      color: #2c3e50;
+      font-size: 15px;
+    }
+
+    .toc-list li::before {
+      content: '▸ ';
+      color: #00a8e8;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    /* ========== CONTENIDO ========== */
+    .content {
+      padding: 60px;
+    }
+
+    h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 80px 0 40px 0;
+      color: #00a8e8;
+      border-bottom: 4px solid #00a8e8;
+      padding-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 40px 0 20px 0;
+      color: #2c3e50;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e8ecf1;
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 25px 0 12px 0;
+      color: #00a8e8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 18px 0;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    /* ========== TABLAS ========== */
+    table {
+      width: 100%;
+      margin: 30px 0;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    table thead {
+      background: linear-gradient(to right, #00a8e8, #00a8e8);
+      color: white;
+    }
+
+    table th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e8ecf1;
+      font-size: 14px;
+    }
+
+    table tbody tr:hover {
+      background: #f8fafb;
+    }
+
+    table tbody tr:nth-child(even) {
+      background: #f8fafb;
+    }
+
+    /* ========== LISTAS ========== */
+    ul, ol {
+      margin: 20px 0 20px 40px;
+      color: #555;
+    }
+
+    ul li, ol li {
+      margin: 10px 0;
+      line-height: 1.8;
+    }
+
+    ul li::marker {
+      color: #00a8e8;
+      font-weight: bold;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .feature-item {
+      background: #f8fafb;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #00a8e8;
+      display: flex;
+      gap: 15px;
+    }
+
+    .feature-item::before {
+      content: '✓';
+      font-size: 24px;
+      color: #00a8e8;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .feature-item strong {
+      color: #2c3e50;
+      display: block;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .feature-item p {
+      font-size: 13px;
+      margin: 0;
+      color: #666;
+    }
+
+    /* ========== BLOQUES DE CÓDIGO ========== */
+    code {
+      background: #f8fafb;
+      color: #d63384;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    pre {
+      background: linear-gradient(to bottom, #2c3e50, #34495e);
+      color: #ecf0f1;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      overflow-x: auto;
+      border-left: 4px solid #00a8e8;
+    }
+
+    pre code {
+      background: none;
+      color: #ecf0f1;
+      padding: 0;
+    }
+
+    /* ========== CAJAS DESTACADAS ========== */
+    .highlight-box {
+      background: linear-gradient(to right, #e7f8ff, #ffffff);
+      border-left: 5px solid #00a8e8;
+      border-radius: 4px;
+      padding: 20px;
+      margin: 30px 0;
+      border-top: 1px solid #00a8e8;
+      border-bottom: 1px solid #e8ecf1;
+    }
+
+    .highlight-box strong {
+      color: #00a8e8;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .highlight-box p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    /* ========== ESPECIFICACIONES ========== */
+    .spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .spec-card {
+      background: white;
+      border: 1px solid #e8ecf1;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .spec-card strong {
+      color: #00a8e8;
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .spec-card p {
+      font-size: 13px;
+      margin: 0;
+      color: #666;
+    }
+
+    /* ========== PIE DE PÁGINA ========== */
+    .footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 40px 60px;
+      margin-top: 80px;
+      border-top: 4px solid #00a8e8;
+    }
+
+    .footer p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+    }
+
+    /* ========== MEDIA QUERIES ========== */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0;
+      }
+
+      .content, .cover, .toc-section {
+        padding: 40px 30px;
+      }
+
+      h2 {
+        font-size: 32px;
+        margin: 50px 0 25px 0;
+      }
+
+      .toc-list {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-list, .spec-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cover h1 {
+        font-size: 36px;
+      }
+
+      .cover .subtitle {
+        font-size: 18px;
+      }
+    }
+
+    /* ========== IMPRESIÓN ========== */
+    @media print {
+      .cover {
+        page-break-after: always;
+        margin-bottom: 0;
+        break-after: page;
+      }
+
+      .toc-section {
+        page-break-after: always;
+        break-after: page;
+      }
+
+      h2 {
+        page-break-after: avoid;
+      }
+
+      .feature-list, .spec-grid {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- PORTADA -->
+    <section class="cover page-break">
+      <h1>Control Operativo en Tiempo Real</h1>
+      <p class="subtitle">Terminal de Ómnibus Ciudad del Este</p>
+      <p>Aplicación Web para Gestión de Salidas y Registro Operativo</p>
+      <p style="margin-top: 10px; font-size: 14px;">Sistema integral de monitoreo y control de operaciones en tiempo real</p>
+      
+      <div class="metadata">
+        <span><strong>Fecha:</strong> Noviembre 2025</span>
+        <span><strong>Versión:</strong> 1.0.0</span>
+        <span><strong>Tipo:</strong> Proyecto de Tesis</span>
+      </div>
+    </section>
+
+    <!-- ÍNDICE -->
+    <section class="toc-section page-break">
+      <h2>Contenido</h2>
+      <ul class="toc-list">
+        <li>Resumen Ejecutivo</li>
+        <li>Introducción</li>
+        <li>Objetivos del Proyecto</li>
+        <li>Descripción Técnica</li>
+        <li>Arquitectura del Sistema</li>
+        <li>Características Principales</li>
+        <li>Guía de Instalación</li>
+        <li>Manual de Usuario</li>
+        <li>Especificaciones Técnicas</li>
+        <li>Conclusiones</li>
+      </ul>
+    </section>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <section class="content">
+
+      <!-- 1. RESUMEN EJECUTIVO -->
+      <section>
+        <h2>1. Resumen Ejecutivo</h2>
+        <p>
+          El presente proyecto desarrolla un <strong>sistema web completo para la gestión operativa en tiempo real</strong> de una terminal de ómnibus. La aplicación permite registrar, monitorear y controlar salidas, llegadas y eventos operativos de forma centralizada, ofreciendo una interfaz intuitiva para administradores y un portal público para consulta de pasajeros.
+        </p>
+        <p>
+          El sistema utiliza tecnologías modernas como Express.js, Socket.IO y JavaScript vanilla, proporcionando <strong>actualizaciones en tiempo real, persistencia de datos y una experiencia de usuario responsiva y profesional</strong>.
+        </p>
+
+        <div class="highlight-box">
+          <strong>Beneficios Clave</strong>
+          <p>✓ Centralización completa de información operativa</p>
+          <p>✓ Actualizaciones en tiempo real para todos los usuarios</p>
+          <p>✓ Mejora significativa en eficiencia operativa</p>
+          <p>✓ Mejor experiencia para pasajeros y operadores</p>
+        </div>
+      </section>
+
+      <!-- 2. INTRODUCCIÓN -->
+      <section class="page-break">
+        <h2>2. Introducción</h2>
+        <p>
+          Las terminales de transporte requieren sistemas eficientes para gestionar cientos de salidas diarias. Los métodos tradicionales, como registros manuales o sistemas desactualizados, generan ineficiencias operativas y experiencias deficientes para los pasajeros.
+        </p>
+        <p>
+          Este proyecto propone una <strong>solución digital completa que centraliza toda la información operativa</strong>, proporcionando acceso en tiempo real tanto a operadores como a pasajeros, mejorando la precisión, la velocidad de respuesta y la satisfacción del cliente.
+        </p>
+
+        <h3>Problema Identificado</h3>
+        <ul>
+          <li>Falta de centralización de información operativa</li>
+          <li>Retrasos en actualización de información a pasajeros</li>
+          <li>Dificultad en búsqueda y consulta de horarios</li>
+          <li>Procesos administrativos manuales y propensos a errores</li>
+          <li>Falta de sincronización entre sistemas</li>
+        </ul>
+
+        <h3>Solución Propuesta</h3>
+        <p>
+          Un sistema web integrado que proporcione una plataforma única para gestión, monitoreo y consulta de operaciones de transporte, con sincronización en tiempo real y experiencia de usuario optimizada.
+        </p>
+      </section>
+
+      <!-- 3. OBJETIVOS -->
+      <section class="page-break">
+        <h2>3. Objetivos del Proyecto</h2>
+
+        <h3>Objetivo General</h3>
+        <p>
+          Desarrollar una aplicación web integral para la gestión operativa en tiempo real de una terminal de ómnibus, que automatice registros, centralice información y mejore la experiencia de pasajeros y operadores.
+        </p>
+
+        <h3>Objetivos Específicos</h3>
+        <ul>
+          <li>Crear un panel administrativo completo para registrar y gestionar salidas operativas</li>
+          <li>Implementar un portal público intuitivo para consulta de horarios y estado de salidas</li>
+          <li>Desarrollar sincronización bidireccional en tiempo real mediante WebSockets</li>
+          <li>Garantizar persistencia segura de datos con almacenamiento JSON y escritura atómica</li>
+          <li>Proporcionar una interfaz responsiva y amigable para usuarios de todas las capacidades</li>
+          <li>Implementar sistema robusto de autenticación para acceso administrativo</li>
+          <li>Documentar completamente el sistema para facilitar mantenimiento futuro</li>
+        </ul>
+      </section>
+
+      <!-- 4. DESCRIPCIÓN TÉCNICA -->
+      <section class="page-break">
+        <h2>4. Descripción Técnica</h2>
+        <p>
+          El sistema está construido con un enfoque moderno de arquitectura cliente-servidor, utilizando tecnologías web estándar y ampliamente adoptadas en la industria, garantizando escalabilidad y mantenibilidad.
+        </p>
+
+        <h3>Stack Tecnológico</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Versión</th>
+              <th>Función</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Node.js + Express.js</td>
+              <td>18+ / 4.19.2</td>
+              <td>Servidor HTTP y API REST</td>
+            </tr>
+            <tr>
+              <td>Socket.IO</td>
+              <td>4.7.5</td>
+              <td>Comunicación bidireccional en tiempo real</td>
+            </tr>
+            <tr>
+              <td>HTML5 + CSS3</td>
+              <td>ES6+</td>
+              <td>Frontend responsivo</td>
+            </tr>
+            <tr>
+              <td>JavaScript Vanilla</td>
+              <td>ES6+</td>
+              <td>Lógica frontend sin dependencias</td>
+            </tr>
+            <tr>
+              <td>JSON File Storage</td>
+              <td>-</td>
+              <td>Persistencia de datos</td>
+            </tr>
+            <tr>
+              <td>CORS</td>
+              <td>2.8.5</td>
+              <td>Control de acceso entre dominios</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Características de Diseño</h3>
+        <div class="spec-grid">
+          <div class="spec-card">
+            <strong>Arquitectura Modular</strong>
+            <p>Separación clara entre capas de presentación, aplicación y datos</p>
+          </div>
+          <div class="spec-card">
+            <strong>Tiempo Real</strong>
+            <p>Socket.IO para sincronización bidireccional instantánea</p>
+          </div>
+          <div class="spec-card">
+            <strong>Responsive Design</strong>
+            <p>Funciona perfectamente en desktop, tablet y dispositivos móviles</p>
+          </div>
+          <div class="spec-card">
+            <strong>Sin Dependencias Pesadas</strong>
+            <p>JavaScript vanilla sin frameworks innecesarios</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. ARQUITECTURA -->
+      <section class="page-break">
+        <h2>5. Arquitectura del Sistema</h2>
+
+        <h3>Modelo de Capas</h3>
+        <p>
+          El sistema sigue una arquitectura en tres capas claramente definidas:
+        </p>
+
+        <h4>Capa de Presentación (Frontend)</h4>
+        <ul>
+          <li><strong>Admin Panel:</strong> Interfaz administrativa para registrar y gestionar salidas operativas</li>
+          <li><strong>Portal Público:</strong> Vista de consulta de horarios y estado para pasajeros</li>
+          <li><strong>Display:</strong> Pantalla de visualización en tiempo real para mostradores/pantallas públicas</li>
+        </ul>
+
+        <h4>Capa de Aplicación (Backend)</h4>
+        <ul>
+          <li><strong>Express Server:</strong> Servidor HTTP que sirve archivos estáticos y gestiona rutas API</li>
+          <li><strong>Socket.IO Server:</strong> Servidor de WebSocket para comunicación bidireccional</li>
+          <li><strong>API REST:</strong> Endpoints RESTful para operaciones CRUD de registros</li>
+          <li><strong>Validación:</strong> Funciones de validación y sanitización de datos</li>
+        </ul>
+
+        <h4>Capa de Datos (Persistencia)</h4>
+        <ul>
+          <li><strong>Archivo records.json:</strong> Base de datos de registros operativos en formato JSON</li>
+          <li><strong>Escritura Atómica:</strong> Uso de archivos temporales para evitar corrupción</li>
+          <li><strong>Sincronización:</strong> Lectura consistente de datos entre conexiones</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Ventaja de esta Arquitectura</strong>
+          <p>Permite escalabilidad horizontal, mantenimiento fácil y despliegue simple sin dependencias complejas de base de datos</p>
+        </div>
+      </section>
+
+      <!-- 6. CARACTERÍSTICAS -->
+      <section class="page-break">
+        <h2>6. Características Principales</h2>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div>
+              <strong>📝 Registro de Salidas</strong>
+              <p>Panel administrativo completo para registrar nuevas salidas con múltiples campos configurables</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div>
+              <strong>🔐 Autenticación Segura</strong>
+              <p>Sistema de login robusto con validación de credenciales para proteger acceso administrativo</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div>
+              <strong>⚡ Tiempo Real</strong>
+              <p>Sincronización instantánea de datos mediante Socket.IO a todos los clientes conectados</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div>
+              <strong>🔍 Buscador Avanzado</strong>
+              <p>Portal con filtros por empresa, trayecto, tipo de evento y fecha para consulta flexible</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div>
+              <strong>📱 Diseño Responsive</strong>
+              <p>Interfaz completamente adaptable a cualquier tamaño de pantalla y dispositivo</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div>
+              <strong>💾 Persistencia de Datos</strong>
+              <p>Almacenamiento seguro de datos en archivo JSON con escritura atómica garantizada</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. INSTALACIÓN -->
+      <section class="page-break">
+        <h2>7. Guía de Instalación</h2>
+
+        <h3>Requisitos Previos</h3>
+        <ul>
+          <li>Node.js versión 18 o superior instalado</li>
+          <li>npm (Administrador de paquetes de Node.js, incluido con Node.js)</li>
+          <li>Navegador web moderno (Chrome, Firefox, Safari, Edge)</li>
+          <li>Acceso a terminal/consola del sistema operativo</li>
+        </ul>
+
+        <h3>Pasos de Instalación</h3>
+
+        <h4>1. Descargar el Proyecto</h4>
+        <pre><code>git clone &lt;repositorio&gt;
+cd control-operativo-realtime</code></pre>
+
+        <h4>2. Instalar Dependencias</h4>
+        <pre><code>npm install</code></pre>
+
+        <h4>3. Inicializar Base de Datos</h4>
+        <pre><code>npm run init</code></pre>
+
+        <h4>4. Iniciar el Servidor</h4>
+        <pre><code>npm start</code></pre>
+
+        <p style="margin-top: 25px;">
+          El servidor estará disponible en <code>http://localhost:3000</code>
+        </p>
+
+        <h3>Acceso a las Aplicaciones</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Aplicación</th>
+              <th>URL</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Panel Admin</td>
+              <td><code>http://localhost:3000/admin.html</code></td>
+              <td>Gestión y registro de salidas</td>
+            </tr>
+            <tr>
+              <td>Portal Público</td>
+              <td><code>http://localhost:3000/portal.html</code></td>
+              <td>Consulta de horarios para pasajeros</td>
+            </tr>
+            <tr>
+              <td>Display</td>
+              <td><code>http://localhost:3000/display.html</code></td>
+              <td>Pantalla de información en tiempo real</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <strong>Credenciales por Defecto</strong>
+          <p><strong>Usuario:</strong> admin</p>
+          <p><strong>Contraseña:</strong> admin2025</p>
+        </div>
+      </section>
+
+      <!-- 8. MANUAL DE USUARIO -->
+      <section class="page-break">
+        <h2>8. Manual de Usuario</h2>
+
+        <h3>Panel Administrativo - Acceso al Sistema</h3>
+        <ol>
+          <li>Acceder a <code>http://localhost:3000/admin.html</code></li>
+          <li>Ingresar credenciales:
+            <ul>
+              <li><strong>Usuario:</strong> admin</li>
+              <li><strong>Contraseña:</strong> admin2025</li>
+            </ul>
+          </li>
+          <li>Hacer clic en el botón "Ingresar"</li>
+          <li>Acceso otorgado al panel de administración</li>
+        </ol>
+
+        <h3>Registrar Nueva Salida</h3>
+        <ol>
+          <li>En el panel administrativo, completar el formulario "Registrar Nueva Salida"</li>
+          <li>Campos obligatorios:
+            <ul>
+              <li>Empresa (seleccionar de lista)</li>
+              <li>Trayecto (origen/destino)</li>
+              <li>Tipo de Evento (Salida/Llegada/Retraso)</li>
+              <li>Hora Real (hora actual de la operación)</li>
+            </ul>
+          </li>
+          <li>Campos opcionales:
+            <ul>
+              <li>Hora Programada</li>
+              <li>Chapa del vehículo</li>
+              <li>Número de coche</li>
+              <li>Tipo de servicio</li>
+              <li>Plataforma</li>
+              <li>Precio</li>
+              <li>Cantidad de pasajeros</li>
+              <li>Cantidad de boletos vendidos</li>
+              <li>Nombre del conductor</li>
+              <li>Nombre del copiloto</li>
+              <li>Observaciones generales</li>
+            </ul>
+          </li>
+          <li>Hacer clic en "Guardar"</li>
+          <li>El registro aparecerá instantáneamente en la tabla y en todos los navegadores conectados</li>
+        </ol>
+
+        <h3>Portal Público - Consultar Horarios</h3>
+        <ol>
+          <li>Acceder a <code>http://localhost:3000/portal.html</code></li>
+          <li>Los registros se cargan automáticamente</li>
+          <li>Utilizar los filtros disponibles:
+            <ul>
+              <li>Empresa (dropdown)</li>
+              <li>Origen/Destino (búsqueda por trayecto)</li>
+              <li>Tipo de Evento (todos/salida/llegada/retraso)</li>
+              <li>Rango de fechas</li>
+            </ul>
+          </li>
+          <li>Hacer clic en "Buscar viajes"</li>
+          <li>Los resultados se actualizan automáticamente en tiempo real</li>
+        </ol>
+
+        <h3>Eliminar un Registro</h3>
+        <ol>
+          <li>En el panel administrativo, ubicar el registro a eliminar</li>
+          <li>Hacer clic en el botón "Eliminar" (ícono de basura) al final de la fila</li>
+          <li>Confirmar la acción</li>
+          <li>El registro se elimina instantáneamente en todos los sistemas conectados</li>
+        </ol>
+      </section>
+
+      <!-- 9. ESPECIFICACIONES TÉCNICAS -->
+      <section class="page-break">
+        <h2>9. Especificaciones Técnicas</h2>
+
+        <h3>Estructura de Directorios</h3>
+        <pre><code>control-operativo-realtime/
+├── server/
+│   ├── server.js          # Servidor Express y Socket.IO
+│   └── data/
+│       └── records.json   # Base de datos de registros
+├── public/
+│   ├── admin.html         # Panel administrativo
+│   ├── portal.html        # Portal público
+│   ├── display.html       # Pantalla de información
+│   └── styles.css         # Estilos compartidos
+├── scripts/
+│   └── init.js           # Script de inicialización
+├── package.json           # Dependencias del proyecto
+├── app.config.js         # Configuración central
+└── README.md             # Documentación básica</code></pre>
+
+        <h3>Dependencias del Proyecto</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Paquete</th>
+              <th>Versión</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>express</td>
+              <td>^4.19.2</td>
+              <td>Framework web para Node.js</td>
+            </tr>
+            <tr>
+              <td>socket.io</td>
+              <td>^4.7.5</td>
+              <td>Biblioteca para comunicación en tiempo real</td>
+            </tr>
+            <tr>
+              <td>cors</td>
+              <td>^2.8.5</td>
+              <td>Middleware para CORS</td>
+            </tr>
+            <tr>
+              <td>dotenv</td>
+              <td>^16.4.5</td>
+              <td>Administrador de variables de entorno</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Endpoints de la API REST</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Endpoint</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GET</td>
+              <td>/api/records</td>
+              <td>Obtener lista de registros con filtros opcionales</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td>/api/records</td>
+              <td>Crear nuevo registro operativo</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td>/api/records/:id</td>
+              <td>Eliminar registro por ID</td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td>/api/server-time</td>
+              <td>Obtener hora actual del servidor</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Eventos Socket.IO</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Evento</th>
+              <th>Dirección</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>record:new</td>
+              <td>Servidor → Clientes</td>
+              <td>Notifica creación de nuevo registro a todos los clientes</td>
+            </tr>
+            <tr>
+              <td>record:deleted</td>
+              <td>Servidor → Clientes</td>
+              <td>Notifica eliminación de registro a todos los clientes</td>
+            </tr>
+            <tr>
+              <td>connect</td>
+              <td>Bidireccional</td>
+              <td>Evento cuando cliente se conecta al servidor</td>
+            </tr>
+            <tr>
+              <td>disconnect</td>
+              <td>Bidireccional</td>
+              <td>Evento cuando cliente se desconecta del servidor</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 10. CONCLUSIONES -->
+      <section class="page-break">
+        <h2>10. Conclusiones</h2>
+
+        <p>
+          El sistema desarrollado proporciona una <strong>solución moderna y efectiva para la gestión operativa de una terminal de ómnibus</strong>. La implementación de tecnologías web contemporáneas asegura escalabilidad, mantenibilidad y una experiencia de usuario superior.
+        </p>
+
+        <h3>Logros Alcanzados</h3>
+        <ul>
+          <li>✓ Sistema web completo y completamente funcional para gestión operativa</li>
+          <li>✓ Comunicación en tiempo real mediante Socket.IO implementada y validada</li>
+          <li>✓ Interfaz profesional, intuitiva y responsiva en todos los dispositivos</li>
+          <li>✓ Persistencia segura de datos con escritura atómica</li>
+          <li>✓ Sistema de autenticación robusto implementado</li>
+          <li>✓ API REST bien estructurada y documentada</li>
+          <li>✓ Documentación técnica completa y guías de usuario claras</li>
+        </ul>
+
+        <h3>Mejoras Futuras Recomendadas</h3>
+        <ul>
+          <li>Migración a base de datos relacional (PostgreSQL/MySQL) para mayor escalabilidad</li>
+          <li>Implementación de autenticación OAuth 2.0 / JWT mejorada</li>
+          <li>Agregación de reportes analytics y estadísticas avanzadas</li>
+          <li>Notificaciones automáticas a pasajeros por correo/SMS</li>
+          <li>Desarrollo de aplicación móvil nativa (iOS/Android)</li>
+          <li>Integración con sistemas externos de ticketing</li>
+          <li>Panel de analytics con dashboards interactivos</li>
+          <li>Copia de seguridad automática y recuperación de desastres</li>
+        </ul>
+
+        <h3>Consideraciones para Producción</h3>
+        <p>Para un ambiente de producción, se recomienda:</p>
+        <ul>
+          <li>Migrar a una base de datos persistente y robusta</li>
+          <li>Implementar HTTPS/SSL para todas las conexiones</li>
+          <li>Configurar variables de entorno apropiadas</li>
+          <li>Establecer logging y monitoreo continuo del sistema</li>
+          <li>Implementar copias de seguridad automáticas diarias</li>
+          <li>Realizar tests automatizados exhaustivos</li>
+          <li>Documentar y versionar todos los cambios en Git</li>
+          <li>Configurar CI/CD para despliegue automatizado</li>
+          <li>Implementar load balancing si se esperan muchos usuarios</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Reflexión Final</strong>
+          <p>Este proyecto demuestra cómo las tecnologías web modernas pueden transformar procesos operativos tradicionales en soluciones ágiles, escalables y centradas en el usuario. El sistema proporciona una base sólida para la gestión eficiente de operaciones de transporte, mejorando significativamente la experiencia de todos los actores involucrados.</p>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- PIE DE PÁGINA -->
+    <section class="footer">
+      <p><strong>Control Operativo en Tiempo Real</strong></p>
+      <p>Versión 1.0.0 - Proyecto de Tesis</p>
+      <p>Generado: Noviembre 2025</p>
+      <p>© 2025 Sistema de Control Operativo. Todos los derechos reservados.</p>
+    </section>
+
+  </div>
+</body>
+</html>

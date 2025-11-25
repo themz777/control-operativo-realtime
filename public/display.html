@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>
+     - Control Operativo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231fe1d6'/></svg>" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+    :root{
+      --bg-light: #ffffff;
+      --bg-gray: #f8fafb;
+      --surface-light: #ffffff;
+      --surface-gray: #f3f5f7;
+      --text-primary: #2c3e50;
+      --text-secondary: #5a6c7d;
+      --text-muted: #8a94a8;
+      --accent-blue: #00a8e8;
+      --accent-dark: #007bba;
+      --accent-light: #e7f8ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --glow-blue: 0 0 20px rgba(0, 168, 232, 0.2);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+      --header-h: 0px;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0 }
+    html{ scroll-behavior: smooth; }
+    body{
+      background: #ffffff;
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    body::before{
+      display: none;
+    }
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      background: #ffffff;
+      border-bottom: 1px solid #e8ecf1;
+      box-shadow: var(--shadow-md);
+    }
+    .toolbar{
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-right: 20px;
+      border-right: 1px solid #e8ecf1;
+      flex-shrink: 0;
+    }
+    .live-indicator{
+      position: relative;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.15), var(--glow-blue);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    @keyframes pulse-glow{
+      0%, 100%{ box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.15), var(--glow-blue); }
+      50%{ box-shadow: 0 0 0 8px rgba(0, 168, 232, 0.08), 0 0 30px rgba(0, 168, 232, 0.25); }
+    }
+    .brand-content{ display: flex; flex-direction: column; gap: 2px; }
+    .brand-title{
+      font-size: clamp(20px, 4vw, 24px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+    }
+    .brand-sub{
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .controls{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+      flex-wrap: wrap;
+      min-width: 600px;
+    }
+    .filter-group{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #f8fafb;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #e8ecf1;
+      transition: all 0.3s ease;
+    }
+    .filter-group:hover{
+      border-color: var(--accent-blue);
+      background: var(--accent-light);
+    }
+    .filter-group label{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .input, .select{
+      height: 32px;
+      min-width: 160px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid #e8ecf1;
+      background: #ffffff;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .input::placeholder{ color: var(--text-muted); }
+    .input:focus, .select:focus{
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+      background: var(--bg-light);
+    }
+    .checkbox{
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--accent-teal);
+    }
+    .btn{
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid #e8ecf1;
+      background: #f8fafb;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      border-color: var(--accent-blue);
+      background: var(--accent-light);
+      box-shadow: var(--shadow-md);
+    }
+    .btn-primary{
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-dark) 100%);
+      border: 0;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 16px rgba(0, 168, 232, 0.2);
+    }
+    .btn-primary:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 168, 232, 0.3);
+    }
+    .status-badge{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .status-badge.disconnected{
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+    .status-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: status-pulse 2s ease-in-out infinite;
+    }
+    @keyframes status-pulse{
+      0%, 100%{ opacity: 1; }
+      50%{ opacity: 0.5; }
+    }
+    #clock{
+      font-family: 'Space Mono', monospace;
+      margin-left: auto;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      min-width: 220px;
+      text-align: right;
+      color: var(--accent-blue);
+      font-size: 14px;
+      text-shadow: none;
+    }
+    main{
+      max-width: 1600px;
+      margin: 32px auto;
+      padding: 0 24px;
+      min-height: calc(100vh - 200px);
+    }
+    .board{
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: #ffffff;
+      border: 1px solid #e8ecf1;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    table{
+      table-layout: fixed;
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+    thead{
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-dark) 100%);
+      position: sticky;
+      top: var(--header-h) !important;
+      z-index: 5;
+      border-bottom: 2px solid #e8ecf1;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-color: var(--accent-blue) !important;
+      color: #ffffff;
+    }
+    th{
+      padding: 14px 16px;
+      text-align: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: transparent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      position: sticky;
+      top: var(--header-h) !important;
+      background: inherit !important;
+    }
+    tbody tr{
+      border-top: 1px solid #e8ecf1;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    tbody tr:nth-child(even){ background: #f8fafb; }
+    tbody tr:hover{
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent-blue);
+    }
+    td{
+      padding: 14px 10px;
+      color: var(--text-primary);
+      font-weight: 500;
+      vertical-align: middle;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    th:nth-child(1), td:nth-child(1){ width: 160px !important; text-align: left !important; font-variant-numeric: tabular-nums; }
+    th:nth-child(2), td:nth-child(2){ width: 160px !important; text-align: center !important; }
+    th:nth-child(3), td:nth-child(3){ width: 200px !important; text-align: left !important; }
+    th:nth-child(4), td:nth-child(4){ width: auto !important; text-align: left !important; }
+    th:nth-child(5), td:nth-child(5){ width: 140px !important; text-align: center !important; }
+    th:nth-child(6), td:nth-child(6){ width: 180px !important; text-align: right !important; font-weight: 800; font-variant-numeric: tabular-nums lining-nums; }
+    .hora{
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+      color: var(--accent-blue);
+      text-shadow: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hora small{
+      display: block;
+      margin-top: 0;
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+    .empresa{
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--accent-blue);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+    .trayecto{
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .trayecto .muted{
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1px;
+    }
+    .plataforma{
+      font-weight: 700;
+      color: var(--accent-blue);
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .precio{
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--accent-dark);
+      text-shadow: none;
+      letter-spacing: -0.2px;
+    }
+    .chip{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      font-size: 10px;
+      border: 1px solid;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .chip.success{
+      background: rgba(16, 185, 129, 0.2);
+      color: #4ade80;
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+    .chip.warn{
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+    .chip.danger{
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    .chip .dot{
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: status-pulse 1.5s ease-in-out infinite;
+    }
+    /* Estado vertical para "Salió" + "Hace X minutos" */
+    .status-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .status-vertical .main {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .status-vertical .sub {
+      font-size: 11px;
+      font-weight: 500;
+    }
+    /* VERDE - A TIEMPO */
+    .status-vertical.success {
+      color: #4ade80;
+    }
+    .status-vertical.success .main {
+      color: #4ade80;
+    }
+    .status-vertical.success .sub {
+      color: #86efac;
+      opacity: 0.8;
+    }
+    /* AMARILLO - PRÓXIMO (5 min) */
+    .status-vertical.warning {
+      color: #fbbf24;
+    }
+    .status-vertical.warning .main {
+      color: #fbbf24;
+    }
+    .status-vertical.warning .sub {
+      color: #fcd34d;
+      opacity: 0.8;
+    }
+    /* ROJO - SALIÓ HACE X MINUTOS */
+    .status-vertical.danger {
+      color: #f87171;
+    }
+    .status-vertical.danger .main {
+      color: #f87171;
+    }
+    .status-vertical.danger .sub {
+      color: #fca5a5;
+      opacity: 0.8;
+    }
+    .empty{
+      text-align: center;
+      padding: 100px 40px;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .empty::before{
+      content: '⊘';
+      display: block;
+      font-size: 56px;
+      margin-bottom: 20px;
+      opacity: 0.25;
+    }
+    .skeleton td{
+      position: relative;
+      overflow: hidden;
+      color: transparent;
+      height: 48px;
+    }
+    .skeleton td::after{
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 6px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0, 168, 232, 0.1) 20%,
+        rgba(0, 168, 232, 0.2) 50%,
+        rgba(0, 168, 232, 0.1) 80%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.8s linear infinite;
+    }
+    @keyframes shimmer{
+      0%{ background-position: -200% 0; }
+      100%{ background-position: 200% 0; }
+    }
+    @media (max-width: 1024px){
+      .toolbar{ gap: 8px; }
+      .controls{ min-width: 400px; }
+      .filter-group{ padding: 6px 10px; }
+      .input, .select{ min-width: 120px; }
+      th:nth-child(5), td:nth-child(5){ display: none; }
+    }
+    @media (max-width: 768px){
+      .controls{ min-width: 300px; flex-direction: column; gap: 8px; align-items: stretch; }
+      .filter-group{ flex-direction: column; align-items: flex-start; }
+      .input, .select{ width: 100%; min-width: unset; }
+      .trayecto{ font-size: 14px; }
+      .hora{ font-size: 24px; }
+      th:nth-child(2), td:nth-child(2){ display: none; }
+      #clock{ margin-left: 0; margin-top: 8px; text-align: left; }
+    }
+    footer{
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: center;
+      margin: 40px 0;
+      padding-top: 20px;
+      border-top: 1px solid #e8ecf1;
+      letter-spacing: 0.3px;
+    }
+    /* ==== PATCH CSS: sticky + alineación forzada ==== */
+    :root { --header-h: 0px; }
+
+    .board{ overflow: visible !important; }             /* evita que el sticky se recorte */
+    #tabla{ table-layout: fixed; border-collapse: collapse; }
+
+    #tabla thead{
+      position: sticky;
+      top: var(--header-h) !important;
+      z-index: 5;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-dark) 100%) !important;
+      border-bottom: 1px solid #e8ecf1;
+    }
+    #tabla thead th{
+      position: sticky;
+      top: var(--header-h) !important;
+      background: inherit !important;
+    }
+
+    #tabla th, #tabla td{
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+      text-align: left;
+    }
+
+    /* Anchos y alineación por columna */
+    #tabla th:nth-child(1), #tabla td:nth-child(1){ width:160px !important; text-align:left !important; }   /* Hora */
+    #tabla th:nth-child(2), #tabla td:nth-child(2){ width:160px !important; text-align:center !important; } /* Estado */
+    #tabla th:nth-child(3), #tabla td:nth-child(3){ width:200px !important; text-align:left !important; }   /* Empresa */
+    #tabla th:nth-child(4), #tabla td:nth-child(4){ width:auto  !important; text-align:left !important; }   /* Ruta */
+    #tabla th:nth-child(5), #tabla td:nth-child(5){ width:140px !important; text-align:center !important; } /* Plataforma */
+    #tabla th:nth-child(6), #tabla td:nth-child(6){ width:180px !important; text-align:right  !important; } /* Precio */
+
+    .hora, .precio { font-variant-numeric: tabular-nums; }
+    .precio { font-weight: 800; }
+
+    @media (max-width:1024px){
+      #tabla th:nth-child(5), #tabla td:nth-child(5){ display:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="toolbar">
+      <div class="brand">
+        <span class="live-indicator" title="Tiempo real (WebSocket)"></span>
+        <div class="brand-content">
+          <div class="brand-title">Terminal de Ómnibus</div>
+          <div class="brand-sub">Pantalla Pública — Control Operativo</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="filter-group">
+          <label for="filtroEvento">
+            <select id="filtroEvento" class="select" aria-label="Filtro de eventos">
+              <option value="">Evento: Todos</option>
+              <option value="SALIDA">Evento: Salida</option>
+              <option value="INGRESO">Evento: Ingreso</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <label>
+            <input id="filtroEmpresa" class="input" type="search" placeholder="Empresa…" />
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <label>
+            <input id="filtroRuta" class="input" type="search" placeholder="Ruta…" />
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <label>
+            <input type="checkbox" id="filtroProximos" class="checkbox"/>
+            <span>Próximas 6h</span>
+          </label>
+        </div>
+
+        <button id="btnRecargar" class="btn" title="Recargar datos">🔄 Recargar</button>
+        <button id="btnPantalla" class="btn btn-primary" title="Activar pantalla completa">⛶ Pantalla Completa</button>
+
+        <span class="status-badge" id="estadoConexion">
+          <span class="status-dot"></span>
+          <span id="connText">Conectando…</span>
+        </span>
+
+        <div id="clock" title="Fecha y hora actual">--:--:--</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="board">
+      <table id="tabla" role="presentation">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Estado</th>
+            <th>Empresa</th>
+            <th>Ruta</th>
+            <th>Plataforma</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+          <tr class="skeleton"><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr class="skeleton"><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr class="skeleton"><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div id="sinDatos" class="empty" hidden>No hay registros para los filtros seleccionados.</div>
+    </div>
+  </main>
+
+  <footer>
+    🟢 WebSocket en tiempo real • Respaldo automático cada 60 segundos • v2.0 Professional Display
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    'use strict';
+    
+    // ============ CONFIGURACIÓN ============
+    const API = location.origin;
+    const REFRESH_INTERVAL = 60000;
+    const LOADING_ROWS = 3;
+    
+    // Variable global para almacenar datos y hora sincronizada
+    let currentData = [];
+    let serverTimeOffset = 0; // Diferencia en ms entre servidor y cliente
+
+    // ============ DYNAMIC HEADER HEIGHT ============
+    (function(){
+      const header = document.querySelector('header');
+      if(!header) return;
+
+      const setOffset = () => {
+        const h = Math.ceil(header.offsetHeight || header.getBoundingClientRect().height || 0);
+        document.documentElement.style.setProperty('--header-h', h + 'px');
+      };
+
+      new ResizeObserver(setOffset).observe(header);
+      window.addEventListener('load', setOffset);
+      window.addEventListener('resize', setOffset);
+      setOffset();
+    })();
+
+    // ============ DOM REFERENCES ============
+    const $ = q => document.querySelector(q);
+    const tbody = $('#cuerpoTabla');
+    const emptyMsg = $('#sinDatos');
+    const filterEvent = $('#filtroEvento');
+    const filterCompany = $('#filtroEmpresa');
+    const filterRoute = $('#filtroRuta');
+    const filterSoon = $('#filtroProximos');
+    const statusBadge = $('#estadoConexion');
+    const connText = $('#connText');
+    const clockEl = $('#clock');
+    const reloadBtn = $('#btnRecargar');
+    const fullscreenBtn = $('#btnPantalla');
+
+    // ============ SOCKET.IO INITIALIZATION ============
+    const socket = io(API, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 800,
+      reconnectionDelayMax: 4000,
+      reconnectionAttempts: 10
+    });
+
+    // ============ UTILITIES ============
+    const escape = (s = '') => String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    const minDiff = d => Math.round((new Date(d) - new Date()) / 60000);
+
+    const fmt_hora = d => {
+      const b = new Date(d);
+      const h = b.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+      const delta = minDiff(d);
+      const rel = delta >= 0 ? `en ${delta} min` : `hace ${Math.abs(delta)} min`;
+      return `<span class="hora">${h}<small>${rel}</small></span>`;
+    };
+
+    const fmt_precio = v => (v == null || v === '') ? '—' : 
+      new Intl.NumberFormat('es-PY', { style: 'currency', currency: 'PYG', maximumFractionDigits: 0 }).format(v);
+
+    // ============ GET TRIP STATUS ============
+    const getChip = row => {
+      const prog = row.horaProgramada ? new Date(row.horaProgramada) : null;
+      const real = row.horaReal ? new Date(row.horaReal) : null;
+      // Usar hora sincronizada del servidor
+      const now = new Date(Date.now() + serverTimeOffset);
+
+      if (!prog) return `<span class="chip warn"><span class="dot"></span> Programado</span>`;
+
+      // ¿Cuánto tiempo pasó desde la hora programada?
+      const minDesdePrograma = Math.round((now - prog) / 60000);
+
+      // Falta para la hora programada (minutos)
+      const minHastaProg = Math.round((prog - now) / 60000);
+
+      // Si falta menos de 5 min y más de 0 → próximo a salir (AMARILLO)
+      if (minHastaProg > 0 && minHastaProg <= 5) {
+        return `<div class="status-vertical warning"><span class="main">Próximo</span><span class="sub">En ${minHastaProg}m</span></div>`;
+      }
+
+      // Si YA PASÓ la hora programada
+      if (now >= prog) {
+        // Si pasó hace menos de 5 minutos → A TIEMPO (VERDE)
+        if (minDesdePrograma <= 5) {
+          return `<div class="status-vertical success"><span class="main">A tiempo</span><span class="sub">Hace poco</span></div>`;
+        }
+        // Si pasó hace más de 5 minutos → SALIÓ (ROJO)
+        return `<div class="status-vertical danger"><span class="main">Salió</span><span class="sub">Hace ${minDesdePrograma}m</span></div>`;
+      }
+
+      // Aún no llegó la hora → A TIEMPO (VERDE)
+      return `<div class="status-vertical success"><span class="main">A tiempo</span><span class="sub">En ${minHastaProg}m</span></div>`;
+    };
+
+    // ============ ROW BUILDER ============
+    const makeRow = r => {
+      const base = r.horaProgramada || r.horaReal;
+      const hora = fmt_hora(base);
+      const estado = getChip(r);
+      const empresa = `<span class="empresa">${escape(r.empresa || '')}</span>`;
+      const ruta = `<span class="trayecto">${escape(r.trayecto || '')}<span class="muted">• ${escape(r.evento || '')}</span></span>`;
+      const plat = `<span class="plataforma">${escape(r.plataforma || '')}</span>`;
+      const precio = `<span class="precio">${fmt_precio(r.precio)}</span>`;
+      return `<tr><td>${hora}</td><td>${estado}</td><td>${empresa}</td><td>${ruta}</td><td>${plat}</td><td>${precio}</td></tr>`;
+    };
+
+    // ============ FILTERING ============
+    const filtrar = rows => {
+      const ev = filterEvent.value;
+      const emp = filterCompany.value.trim().toLowerCase();
+      const ruta = filterRoute.value.trim().toLowerCase();
+      
+      let result = rows.slice();
+
+      if (ev) result = result.filter(r => (r.evento || '') === ev);
+      if (emp) result = result.filter(r => String(r.empresa || '').toLowerCase().includes(emp));
+      if (ruta) result = result.filter(r => String(r.trayecto || '').toLowerCase().includes(ruta));
+
+      if (filterSoon.checked) {
+        const now = new Date();
+        const min = new Date(now.getTime() - 15 * 60000);
+        const max = new Date(now.getTime() + 6 * 3600000);
+        result = result.filter(r => {
+          const t = new Date(r.horaProgramada || r.horaReal);
+          return t >= min && t <= max;
+        });
+      }
+
+      return result.sort((a, b) => 
+        new Date(a.horaProgramada || a.horaReal) - new Date(b.horaProgramada || b.horaReal)
+      );
+    };
+
+    // ============ SHOW LOADING STATE ============
+    const mostrarCargando = () => {
+      let html = '';
+      for (let i = 0; i < LOADING_ROWS; i++) {
+        html += `<tr class="skeleton"><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
+      }
+      tbody.innerHTML = html;
+      emptyMsg.hidden = true;
+    };
+
+    // ============ RENDER TABLE ============
+    const render = rows => {
+      const filtered = filtrar(rows);
+      
+      if (!filtered.length) {
+        tbody.innerHTML = '';
+        emptyMsg.hidden = false;
+      } else {
+        emptyMsg.hidden = true;
+        tbody.innerHTML = filtered.map(makeRow).join('');
+      }
+    };
+
+    // ============ LOAD DATA ============
+    const cargarDatos = async () => {
+      try {
+        mostrarCargando();
+        const res = await fetch(`${API}/api/records?limit=2000`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        currentData = data; // Guardar en variable global
+        render(data);
+        console.log(`📊 Cargados ${data.length} registros`);
+      } catch (err) {
+        console.error('❌ Error cargando:', err);
+        tbody.innerHTML = '';
+        emptyMsg.hidden = false;
+        emptyMsg.textContent = 'Error al cargar datos. Reintentando...';
+      }
+    };
+
+    // ============ REFRESH ESTADOS (cada 1 seg, con hora sincronizada) ============
+    const refreshEstados = () => {
+      if (!currentData.length) return;
+      
+      // Re-renderizar con datos actuales (estados se recalculan en getChip)
+      render(currentData);
+    };
+
+    // ============ SINCRONIZAR HORA CON SERVIDOR ============
+    const syncServerTime = async () => {
+      try {
+        const res = await fetch(`${API}/api/server-time`, { cache: 'no-store' });
+        const data = await res.json();
+        const clientNow = Date.now();
+        serverTimeOffset = data.timestamp - clientNow;
+        console.log(`🔔 Hora sincronizada con servidor (offset: ${serverTimeOffset}ms)`);
+      } catch (err) {
+        console.warn('⚠️ No se pudo sincronizar hora:', err);
+      }
+    };
+
+    // ============ UPDATE CLOCK ============
+    const actualizarReloj = () => {
+      const now = new Date();
+      clockEl.textContent = now.toLocaleString('es-PY', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    };
+
+    // ============ SOCKET.IO EVENTS ============
+    socket.on('connect', () => {
+      statusBadge.classList.remove('disconnected');
+      connText.textContent = 'Conectado';
+      console.log('✅ Socket.IO conectado');
+      cargarDatos();
+    });
+
+    socket.on('disconnect', () => {
+      statusBadge.classList.add('disconnected');
+      connText.textContent = 'Desconectado';
+      console.warn('⚠️ Socket.IO desconectado');
+    });
+
+    socket.on('reconnect_attempt', () => {
+      connText.textContent = 'Reintentando…';
+    });
+
+    socket.on('error', err => console.error('❌ Error Socket:', err));
+
+    socket.on('record:new', cargarDatos);
+    socket.on('record:deleted', cargarDatos);
+    socket.on('records:reset', cargarDatos);
+
+    // ============ BUTTON EVENTS ============
+    reloadBtn.addEventListener('click', cargarDatos);
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.warn('Fullscreen denied:', err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // ============ FILTER EVENTS ============
+    filterEvent.addEventListener('change', cargarDatos);
+    filterCompany.addEventListener('input', cargarDatos);
+    filterRoute.addEventListener('input', cargarDatos);
+    filterSoon.addEventListener('change', cargarDatos);
+
+    // ============ CLOCK UPDATE ============
+    setInterval(actualizarReloj, 500);
+    actualizarReloj();
+
+    // ============ SINCRONIZAR HORA AL CARGAR ============
+    syncServerTime();
+    
+    // ============ PERIODIC REFRESH ESTADOS (cada 1 seg, tiempo real) ============
+    setInterval(refreshEstados, 1000);
+
+    // ============ RE-SINCRONIZAR CADA 30 SEG ============
+    setInterval(syncServerTime, 30000);
+
+    // ============ PERIODIC REFRESH DATA (cada 60 seg) ============
+    setInterval(cargarDatos, REFRESH_INTERVAL);
+
+    // ============ INITIALIZATION ============
+    cargarDatos();
+    console.log('🚀 Display iniciado correctamente');
+  </script>
+
+  <script>
+  /* ==== PATCH JS: calcula --header-h con ResizeObserver ==== */
+  (function(){
+    const header = document.querySelector('header');
+    if(!header) return;
+
+    const setOffset = () => {
+      const h = Math.ceil(header.offsetHeight || header.getBoundingClientRect().height || 0);
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    };
+
+    new ResizeObserver(setOffset).observe(header);
+    window.addEventListener('load', setOffset);
+    window.addEventListener('resize', setOffset);
+    setOffset();
+  })();
+  </script>
+</body>
+</html>

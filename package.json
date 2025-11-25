@@ -1,0 +1,25 @@
+{
+  "name": "control-operativo-realtime",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Registro de Control Operativo con tablero público en tiempo real (Express + Socket.IO).",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "NODE_ENV=development node server/server.js",
+    "init": "node scripts/init.js",
+    "setup": "npm install && node scripts/init.js"
+  },
+  "keywords": ["express", "socket.io", "realtime", "control", "operativo"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Portal de Salidas - Terminal de Ómnibus</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231fe1d6'/></svg>" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #071021;
+      --card: #0d1628;
+      --card-soft: #111b2f;
+      --accent: #00d9ff;
+      --accent-2: #1fe1d6;
+      --accent-soft: rgba(0,217,255,0.12);
+      --text-main: #f9fafb;
+      --text-soft: #cbd5f5;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --info: #3b82f6;
+      --warning: #f97316;
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.65);
+      --radius-lg: 20px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 0% 0%, rgba(0,217,255,0.15), transparent 55%),
+                  radial-gradient(circle at 100% 0%, rgba(31,225,214,0.15), transparent 55%),
+                  radial-gradient(circle at 50% 100%, rgba(56,189,248,0.12), transparent 55%),
+                  var(--bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      background: linear-gradient(to right, rgba(5,8,22,0.9), rgba(7,16,33,0.9));
+      border-bottom: 1px solid rgba(148,163,184,0.2);
+      padding: 12px 20px;
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34,197,94,0.8);
+      position: relative;
+    }
+
+    .live-dot::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: inherit;
+      border: 1px solid rgba(34,197,94,0.6);
+      opacity: 0.6;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.7); opacity: 0; }
+    }
+
+    .brand-text-main {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text-main);
+    }
+
+    .brand-text-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .top-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-2);
+    }
+
+    .layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .hero {
+      margin-bottom: 60px;
+    }
+
+    .hero-copy {
+      margin-bottom: 40px;
+    }
+
+    .hero-kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-2);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .hero-text {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.6;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--card);
+      border: 1px solid rgba(31,225,214,0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .search-card {
+      background: linear-gradient(135deg, rgba(13,22,40,0.6), rgba(17,27,47,0.6));
+      border: 1px solid rgba(0,217,255,0.2);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-soft);
+    }
+
+    .field select,
+    .field input {
+      padding: 10px 12px;
+      border: 1px solid rgba(148,163,184,0.3);
+      border-radius: var(--radius-md);
+      background: rgba(5,8,22,0.5);
+      color: var(--text-main);
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(5,8,22,0.8);
+      box-shadow: 0 0 12px rgba(0,217,255,0.2);
+    }
+
+    .field small {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .search-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: var(--bg);
+      box-shadow: 0 8px 24px rgba(0,217,255,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,217,255,0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-soft);
+      border: 1px solid rgba(148,163,184,0.3);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(148,163,184,0.1);
+      border-color: rgba(148,163,184,0.5);
+    }
+
+    .results {
+      margin-top: 60px;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(148,163,184,0.2);
+    }
+
+    .results-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .results-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .empty,
+    .error-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-md);
+      color: #fca5a5;
+    }
+
+    .trip-card {
+      background: linear-gradient(135deg, rgba(13,22,40,0.4), rgba(17,27,47,0.4));
+      border: 1px solid rgba(0,217,255,0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+
+    .trip-card:hover {
+      border-color: rgba(0,217,255,0.4);
+      background: linear-gradient(135deg, rgba(13,22,40,0.6), rgba(17,27,47,0.6));
+      box-shadow: 0 8px 32px rgba(0,217,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    .trip-main {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .trip-main {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    .trip-route h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .trip-route .meta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .trip-time {
+      text-align: right;
+    }
+
+    .trip-time-main {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .trip-time-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .trip-platform {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: right;
+    }
+
+    .trip-platform .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .trip-platform .value {
+      font-size: 14px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .trip-price {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .trip-price .amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(59,130,246,0.16);
+      border: 1px solid rgba(59,130,246,0.5);
+      border-radius: 6px;
+      font-size: 12px;
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    .status-success {
+      border-color: rgba(34,197,94,0.7);
+      background: rgba(34,197,94,0.16);
+    }
+    .status-success .dot { background: var(--success); }
+    .status-success { color: #86efac; }
+
+    .status-info {
+      border-color: rgba(59,130,246,0.7);
+      background: rgba(59,130,246,0.16);
+    }
+    .status-info .dot { background: var(--info); }
+    .status-info { color: #93c5fd; }
+
+    .status-warning {
+      border-color: rgba(249,115,22,0.7);
+      background: rgba(234,88,12,0.16);
+    }
+    .status-warning .dot { background: var(--warning); }
+
+    .status-danger {
+      border-color: rgba(239,68,68,0.7);
+      background: rgba(220,38,38,0.16);
+    }
+    .status-danger .dot { background: var(--danger); }
+
+    .trip-notes {
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(148,163,184,0.55);
+      padding-top: 5px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-block">
+        <span class="live-dot" title="Conectado al panel en tiempo real"></span>
+        <div>
+          <div class="brand-text-main">Terminal de Ómnibus Ciudad del Este</div>
+          <div class="brand-text-sub">Portal público de salidas en tiempo real</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="top-tag">
+          <span class="dot"></span>
+          <span>Datos desde el panel operativo</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-kicker">Pasajes y salidas</div>
+        <h1 class="hero-title">Buscá tu próximo viaje en segundos</h1>
+        <p class="hero-text">
+          Esta vista está conectada al sistema de control operativo en tiempo real.
+          Filtrá por empresa, trayecto y fecha para ver las salidas actualizadas.
+        </p>
+        <div class="hero-pill">
+          <span class="dot"></span>
+          <span>Información sincronizada con el panel interno</span>
+        </div>
+      </div>
+
+      <form id="formFiltros" class="search-card">
+        <div class="field">
+          <label for="fEmpresa">Empresa</label>
+          <select id="fEmpresa">
+            <option value="">Todas</option>
+          </select>
+          <small>Se llena automáticamente con los datos reales.</small>
+        </div>
+
+        <div class="field">
+          <label for="fTrayecto">Origen / destino</label>
+          <select id="fTrayecto">
+            <option value="">Todos</option>
+          </select>
+          <small>Ejemplo: CDE/ASUNCION</small>
+        </div>
+
+        <div class="field">
+          <label for="fEvento">Tipo de evento</label>
+          <select id="fEvento">
+            <option value="">Todos</option>
+            <option value="SALIDA">Salidas</option>
+            <option value="LLEGADA">Llegadas</option>
+          </select>
+          <small>Lectura amigable para el usuario.</small>
+        </div>
+
+        <div class="field">
+          <label for="fFecha">Fecha</label>
+          <input type="date" id="fFecha" />
+          <small>Filtra por día de salida.</small>
+        </div>
+
+        <div class="search-actions">
+          <button type="submit" class="btn btn-primary">
+            <span>Buscar viajes</span>
+          </button>
+          <button type="button" id="btnLimpiar" class="btn btn-ghost">
+            Limpiar filtros
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results">
+      <div class="results-header">
+        <h2 class="results-title">Próximas salidas registradas</h2>
+        <span id="totalResultados" class="results-count">0 resultados</span>
+      </div>
+
+      <div id="listaResultados" class="results-list"></div>
+      <p id="sinResultados" class="empty" hidden>
+        No hay salidas que coincidan con los filtros seleccionados.
+      </p>
+      <p id="mensajeError" class="error-msg" hidden>
+        No se pudo conectar con el servidor. Verificá que el backend esté encendido.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    const API = location.origin;
+    let registros = [];
+    let filtrosInicializados = false;
+
+    const $ = s => document.querySelector(s);
+
+    const listaResultados = $('#listaResultados');
+    const totalResultados = $('#totalResultados');
+    const sinResultados = $('#sinResultados');
+    const mensajeError = $('#mensajeError');
+
+    const formFiltros = $('#formFiltros');
+    const btnLimpiar = $('#btnLimpiar');
+    const fEmpresa = $('#fEmpresa');
+    const fTrayecto = $('#fTrayecto');
+    const fEvento = $('#fEvento');
+    const fFecha = $('#fFecha');
+
+    const escapeHtml = (s = '') => String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    const formatHora = iso => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (isNaN(d)) return '—';
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    };
+
+    const formatFecha = iso => {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString('es-PY', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short'
+      });
+    };
+
+    const formatPrecio = v => {
+      if (v == null || v === '') return '—';
+      try {
+        return new Intl.NumberFormat('es-PY', {
+          style: 'currency',
+          currency: 'PYG',
+          maximumFractionDigits: 0
+        }).format(v);
+      } catch (e) {
+        return v + ' Gs.';
+      }
+    };
+
+    function buildEstado(record) {
+      const evt = String(record.evento || '').toUpperCase();
+      let label = evt || 'EN SERVICIO';
+      let className = 'status-info';
+
+      if (evt === 'SALIDA') className = 'status-success';
+      else if (evt === 'LLEGADA') className = 'status-info';
+      else if (evt === 'CANCELADO' || evt === 'CANCELADA') className = 'status-danger';
+      else if (evt === 'DEMORA' || evt === 'ATRASO') className = 'status-warning';
+
+      if (typeof record.puntualidadMin === 'number') {
+        const p = record.puntualidadMin;
+        if (p > 5) {
+          label += ' · +' + p + ' min';
+        } else if (p < -5) {
+          label += ' · -' + Math.abs(p) + ' min';
+        } else {
+          label += ' · A horario';
+        }
+      }
+
+      return { label, className };
+    }
+
+    function crearTarjeta(record) {
+      const salida = record.horaProgramada || record.horaReal || null;
+      const hora = formatHora(salida);
+      const fecha = formatFecha(salida);
+      const empresa = escapeHtml(record.empresa || 'Empresa no definida');
+      const trayecto = escapeHtml(record.trayecto || 'Trayecto no definido');
+      const servicio = escapeHtml(record.tipoServicio || 'Servicio no especificado');
+      const plataforma = record.plataforma
+        ? 'Plataforma ' + escapeHtml(record.plataforma)
+        : 'A confirmar';
+      const precio = formatPrecio(record.precio);
+      const estado = buildEstado(record);
+
+      const notas = record.observaciones
+        ? '<p class="trip-notes">' + escapeHtml(record.observaciones) + '</p>'
+        : '';
+
+      return `
+        <article class="trip-card">
+          <div class="trip-main">
+            <div class="trip-route">
+              <h3>${trayecto}</h3>
+              <p class="meta">${empresa} · ${servicio}</p>
+            </div>
+            <div class="trip-time">
+              <div class="trip-time-main">${hora}</div>
+              <div class="trip-time-sub">${fecha || 'Horario registrado'}</div>
+            </div>
+            <div class="trip-platform">
+              <span class="label">Plataforma</span>
+              <span class="value">${plataforma}</span>
+            </div>
+            <div class="trip-price">
+              <div class="amount">${precio}</div>
+              <div class="status-chip ${estado.className}">
+                <span class="dot"></span>
+                <span>${estado.label}</span>
+              </div>
+            </div>
+          </div>
+          ${notas}
+        </article>
+      `;
+    }
+
+    function initFiltros(rows) {
+      const empresas = new Set();
+      const trayectos = new Set();
+
+      rows.forEach(r => {
+        if (r.empresa) empresas.add(r.empresa);
+        if (r.trayecto) trayectos.add(r.trayecto);
+      });
+
+      const addOptions = (select, values) => {
+        const arr = Array.from(values).sort((a, b) => a.localeCompare(b, 'es'));
+        arr.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v;
+          opt.textContent = v;
+          select.appendChild(opt);
+        });
+      };
+
+      addOptions(fEmpresa, empresas);
+      addOptions(fTrayecto, trayectos);
+    }
+
+    function aplicarFiltrosYRender() {
+      if (!Array.isArray(registros)) return;
+
+      mensajeError.hidden = true;
+
+      const empresa = fEmpresa.value;
+      const trayecto = fTrayecto.value;
+      const evento = fEvento.value;
+      const fecha = fFecha.value;
+
+      let rows = registros.slice();
+
+      if (empresa) {
+        rows = rows.filter(r => String(r.empresa || '') === empresa);
+      }
+      if (trayecto) {
+        rows = rows.filter(r => String(r.trayecto || '') === trayecto);
+      }
+      if (evento) {
+        rows = rows.filter(r => String(r.evento || '').toUpperCase() === evento);
+      }
+      if (fecha) {
+        rows = rows.filter(r => {
+          const base = r.horaProgramada || r.horaReal;
+          if (!base) return false;
+          return String(base).startsWith(fecha);
+        });
+      }
+
+      rows.sort((a, b) => {
+        const da = new Date(a.horaProgramada || a.horaReal || a.ts || 0);
+        const db = new Date(b.horaProgramada || b.horaReal || b.ts || 0);
+        return da - db;
+      });
+
+      renderTarjetas(rows);
+    }
+
+    function renderTarjetas(rows) {
+      if (!rows.length) {
+        listaResultados.innerHTML = '';
+        sinResultados.hidden = false;
+        totalResultados.textContent = '0 resultados';
+        return;
+      }
+
+      sinResultados.hidden = true;
+      totalResultados.textContent = rows.length + (rows.length === 1 ? ' resultado' : ' resultados');
+      listaResultados.innerHTML = rows.map(crearTarjeta).join('');
+    }
+
+    async function cargarRegistros() {
+      try {
+        const res = await fetch(API + '/api/records?limit=5000');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        registros = Array.isArray(data) ? data : [];
+
+        if (!filtrosInicializados) {
+          initFiltros(registros);
+          filtrosInicializados = true;
+        }
+
+        aplicarFiltrosYRender();
+      } catch (err) {
+        console.error(err);
+        listaResultados.innerHTML = '';
+        totalResultados.textContent = '–';
+        sinResultados.hidden = true;
+        mensajeError.hidden = false;
+      }
+    }
+
+    formFiltros.addEventListener('submit', (e) => {
+      e.preventDefault();
+      aplicarFiltrosYRender();
+    });
+
+    [fEmpresa, fTrayecto, fEvento, fFecha].forEach(el => {
+      el.addEventListener('change', aplicarFiltrosYRender);
+    });
+
+    btnLimpiar.addEventListener('click', () => {
+      formFiltros.reset();
+      aplicarFiltrosYRender();
+    });
+
+    cargarRegistros();
+    setInterval(cargarRegistros, 60000);
+  </script>
+</body>
+</html>

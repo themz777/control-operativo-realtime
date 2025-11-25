@@ -1,0 +1,148 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║     🚀 CONTROL OPERATIVO - GUÍA RÁPIDA DE INICIO (5 MINUTOS)              ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+1️⃣  PRIMERA VEZ EN POWERSHELL?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+→ Abre PowerShell como ADMINISTRADOR
+→ Ejecuta (copiar y pegar):
+
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+→ Responde Y (Sí)
+
+
+2️⃣  OPCIÓN A: INSTALACIÓN AUTOMÁTICA (RECOMENDADO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+→ Haz doble click en:  INSTALL_WINDOWS.bat
+
+→ Espera a que termine y sigue las instrucciones
+
+
+3️⃣  OPCIÓN B: INSTALACIÓN MANUAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+En PowerShell, copia y pega línea por línea:
+
+   # Ir a la carpeta del proyecto
+   cd "C:\Users\josem_6ac6g6r\Escritorio\Proyecto Alex\3.0\control-operativo-realtime"
+
+   # Instalar dependencias
+   npm install
+
+   # Verificar que todo está bien
+   npm run init
+
+   # INICIAR SERVIDOR
+   npm start
+
+
+4️⃣  ABRIR EN NAVEGADOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cuando veas en la terminal:
+
+   ============================================================
+   🚀 SERVIDOR INICIADO
+   Puerto: 3000
+   ============================================================
+
+Entonces abre (en navegador):
+
+   → Admin:     http://localhost:3000/admin.html
+   → Pantalla:  http://localhost:3000/display.html
+
+
+5️⃣  PRUEBA RÁPIDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EN ADMIN:
+  1. Completa los campos (empresa, trayecto, evento, hora real)
+  2. Click en "Guardar"
+  3. Debes ver un alert diciendo ✅ Registro guardado
+
+EN PANTALLA:
+  1. Recarga la página
+  2. Debes ver el nuevo registro en la tabla
+  3. Si aparece en TIEMPO REAL = ¡TODO FUNCIONA! ✨
+
+
+6️⃣  PROBLEMAS COMUNES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"Port 3000 already in use"
+→ Otro programa usa el puerto
+→ Solución: edita server/.env y cambia PORT=3001
+
+"Cannot find module 'express'"
+→ npm install no funcionó
+→ Solución: ejecuta npm install nuevamente
+
+"No se puede cargar el archivo porque la ejecución..."
+→ PowerShell bloqueado
+→ Solución: ejecuta como Admin y:
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+
+7️⃣  CAMBIOS REALIZADOS (RESUMEN)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Logging profesional en servidor
+✅ Validación mejorada en formularios
+✅ Reconexión automática
+✅ Datos de ejemplo para testing
+✅ Configuración centralizada
+✅ Documentación completa
+✅ Script de verificación
+✅ Sin errores ni vulnerabilidades
+
+
+8️⃣  COMANDOS ÚTILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+npm start              → Inicia servidor
+npm run dev            → Inicia con logs detallados
+npm run init           → Verifica todo
+Ctrl + C               → Detiene servidor
+
+
+9️⃣  ESTRUCTURA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Admin (http://localhost:3000/admin.html)
+  ├─ Crear registros
+  ├─ Ver tabla de registros
+  └─ Eliminar registros
+
+Pantalla Pública (http://localhost:3000/display.html)
+  ├─ Ver horarios en tiempo real
+  ├─ Filtrar por evento/empresa/trayecto
+  ├─ Próximos 6 horas automáticamente
+  └─ Refresco cada 60 segundos
+
+Servidor (http://localhost:3000)
+  ├─ API REST /api/records
+  └─ WebSocket tiempo real
+
+
+🔟  DOCUMENTACIÓN DISPONIBLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+README.md                    → Documentación completa
+INSTALLATION_WINDOWS.md      → Guía detallada de instalación
+COMPLETION_CHECKLIST.md      → Checklist de funcionalidades
+RESUMEN_FINAL.txt           → Resumen de cambios
+QUICK_START.txt             → Este archivo
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡LISTO PARA INSTALAR! 🚀
+
+Ejecuta: npm install && npm start
+
+═══════════════════════════════════════════════════════════════════════════════
